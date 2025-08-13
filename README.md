@@ -1,96 +1,132 @@
-# Obsidian Sample Plugin
+# Quick Scroll Plugin for Obsidian
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+A simple and efficient Obsidian plugin that adds a floating scroll button to quickly navigate to the bottom of your markdown documents.
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+## Features
 
-**Note:** The Obsidian API is still in early alpha and is subject to change at any time!
+- **Floating Scroll Button**: A customizable floating button that appears on your screen
+- **Quick Navigation**: Instantly scroll to the bottom of any markdown document with one click
+- **Customizable Appearance**: 
+  - Choose button position (left, center, or right)
+  - Adjust button size (20px to 50px)
+  - Customize button color
+- **Cross-Platform**: Works on Windows, macOS, and Linux
+- **Smart Scrolling**: Automatically handles both editor and preview modes
+- **Smooth Animations**: Hover effects and smooth transitions
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+## Installation
 
-## First time developing plugins?
+### From Obsidian Community Plugins (Recommended)
+1. Open Obsidian Settings
+2. Go to Community Plugins
+3. Turn off Safe mode
+4. Click Browse
+5. Search for "Quick Scroll"
+6. Click Install
+7. Enable the plugin
 
-Quick starting guide for new plugin devs:
+### Manual Installation
+1. Download the latest release from GitHub
+2. Extract the files to your vault's `.obsidian/plugins/quick-scroll/` folder
+3. Reload Obsidian
+4. Enable the plugin in Settings → Community Plugins
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+## Usage
 
-## Releasing new releases
+Once enabled, you'll see a floating blue button (↓) on your screen:
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+- **Click the button** to instantly scroll to the bottom of the current document
+- **Works in both editor and preview modes**
+- **Automatically appears when viewing markdown files**
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+## Configuration
 
-## Adding your plugin to the community plugin list
+Access the plugin settings in **Settings → Community Plugins → Quick Scroll**:
 
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+### Button Position
+- **Left**: Position the button on the left side of the screen
+- **Center**: Position the button in the center (default)
+- **Right**: Position the button on the right side of the screen
 
-## How to use
+### Button Size
+- Adjust the button size from 20px to 50px
+- Changes are applied immediately
 
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
+### Button Color
+- Choose any color for the button using the color picker
+- Changes are applied immediately
 
-## Manually installing the plugin
+## How It Works
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+The plugin creates a floating button that:
+1. Detects when you're viewing a markdown document
+2. Calculates the total number of lines in the document
+3. Uses Obsidian's built-in scrolling API to navigate to the bottom
+4. Handles both editor and preview modes intelligently
+5. Provides smooth, instant scrolling
 
-## Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint .\src\`
+## Platform Compatibility
 
-## Funding URL
+- ✅ **Windows**: Fully tested and compatible
+- ✅ **macOS**: Fully tested and compatible  
+- ✅ **Linux**: Compatible (uses standard web APIs)
 
-You can include funding URLs where people who use your plugin can financially support it.
+## Troubleshooting
 
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
+### Button Not Visible
+- Make sure you have a markdown file open
+- Check that the plugin is enabled in Community Plugins
+- Try reloading Obsidian (Ctrl/Cmd + R)
 
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
+### Scrolling Not Working
+- Ensure you're viewing a markdown file (not a PDF, image, etc.)
+- Check the console for any error messages
+- Try switching between editor and preview modes
+
+### Performance Issues
+- The plugin is lightweight and shouldn't affect performance
+- If you experience issues, try disabling other plugins to isolate the problem
+
+## Development
+
+### Building from Source
+```bash
+git clone https://github.com/your-username/quick-scroll.git
+cd quick-scroll
+npm install
+npm run build
 ```
 
-If you have multiple URLs, you can also do:
-
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
+### Development Mode
+```bash
+npm run dev
 ```
 
-## API Documentation
+## Contributing
 
-See https://github.com/obsidianmd/obsidian-api
+Contributions are welcome! Please feel free to submit issues, feature requests, or pull requests.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+If you find this plugin helpful, please consider:
+- ⭐ Starring the repository
+- 🐛 Reporting bugs
+- 💡 Suggesting new features
+- 📝 Contributing to the codebase
+
+## Changelog
+
+### Version 0.1.0
+- Initial release
+- Basic scroll-to-bottom functionality
+- Customizable button position, size, and color
+- Support for editor and preview modes
+- Cross-platform compatibility
+
+---
+
+**Made with ❤️ for the Obsidian community**

@@ -1,6 +1,6 @@
 {
 	"name": "quick-scroll",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"description": "Scroll down quickly on documents",
 	"main": "main.js",
 	"scripts": {
@@ -8,8 +8,8 @@
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
 		"version": "node version-bump.mjs && git add manifest.json versions.json"
 	},
-	"keywords": [],
-	"author": "",
+	"keywords": ["obsidian", "plugin", "scroll", "navigation", "quick-scroll", "markdown"],
+	"author": "Jephte Colin",
 	"license": "MIT",
 	"devDependencies": {
 		"@types/node": "^16.11.6",

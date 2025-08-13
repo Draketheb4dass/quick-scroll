@@ -1,23 +1,25 @@
 import { App, MarkdownView, View, Plugin, PluginSettingTab, Setting } from 'obsidian';
 
-// Remember to rename these classes and interfaces!
-
-interface MyPluginSettings {
-    mySetting: string;
+interface QuickScrollSettings {
+    buttonPosition: 'left' | 'center' | 'right';
+    buttonSize: number;
+    buttonColor: string;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
-    mySetting: 'default'
+const DEFAULT_SETTINGS: QuickScrollSettings = {
+    buttonPosition: 'center',
+    buttonSize: 30,
+    buttonColor: '#007BFF'
 };
 
 let globalMarkdownView: MarkdownView | null = null;
 
-export default class HelloWorldPlugin extends Plugin {
-    settings: MyPluginSettings;
-    private scrollButton: HTMLButtonElement;
+export default class QuickScrollPlugin extends Plugin {
+    settings: QuickScrollSettings;
+    public scrollButton: HTMLButtonElement;
 
     async onload() {
-        console.log('loading plugin');
+        console.log('Loading Quick Scroll plugin');
         await this.loadSettings();
 
         this.scrollButton = this.createScrollButton();
@@ -29,7 +31,7 @@ export default class HelloWorldPlugin extends Plugin {
         this.scrollButton.addEventListener("click", this.scrollToBottom.bind(this));
 
         // This adds a settings tab so the user can configure various aspects of the plugin
-        this.addSettingTab(new SampleSettingTab(this.app, this));
+        this.addSettingTab(new QuickScrollSettingTab(this.app, this));
 
         // If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
         // Using this function will automatically remove the event listener when this plugin is disabled.
@@ -42,7 +44,7 @@ export default class HelloWorldPlugin extends Plugin {
     }
 
     onunload() {
-        console.log('unloading plugin');
+        console.log('Unloading Quick Scroll plugin');
         if (this.scrollButton) {
             this.scrollButton.remove();
         }
@@ -63,38 +65,67 @@ export default class HelloWorldPlugin extends Plugin {
         this.scrollButton.innerText = '↓'; // Down arrow symbol
         this.scrollButton.style.position = 'fixed';
         this.scrollButton.style.bottom = '20px'; // Space from bottom
-        this.scrollButton.style.left = '50%'; // Center horizontally
-        this.scrollButton.style.transform = 'translateX(-50%)'; // Align center
+        
+        // Apply position based on settings
+        if (this.settings.buttonPosition === 'left') {
+            this.scrollButton.style.left = '20px';
+            this.scrollButton.style.transform = 'none';
+        } else if (this.settings.buttonPosition === 'right') {
+            this.scrollButton.style.right = '20px';
+            this.scrollButton.style.transform = 'none';
+        } else {
+            this.scrollButton.style.left = '50%'; // Center horizontally
+            this.scrollButton.style.transform = 'translateX(-50%)'; // Align center
+        }
+        
         this.scrollButton.style.zIndex = '1000';
 
         // Apply styles for position, size, background, and shadow
         this.scrollButton.style.boxShadow = '0px 4px 6px rgba(0, 0, 0, 0.1)';
 
-        // Circular shape
-        this.scrollButton.style.width = '30px';
-        this.scrollButton.style.height = '30px';
-        this.scrollButton.style.borderRadius = '40%';
-        this.scrollButton.style.backgroundColor = '#007BFF'; // Blue background
+        // Circular shape with configurable size
+        this.scrollButton.style.width = `${this.settings.buttonSize}px`;
+        this.scrollButton.style.height = `${this.settings.buttonSize}px`;
+        this.scrollButton.style.borderRadius = '50%';
+        this.scrollButton.style.backgroundColor = this.settings.buttonColor;
         this.scrollButton.style.color = 'white';
+        this.scrollButton.style.border = 'none';
+        this.scrollButton.style.cursor = 'pointer';
+        this.scrollButton.style.fontSize = '16px';
+        this.scrollButton.style.fontWeight = 'bold';
+        
+        // Add CSS class for styling
+        this.scrollButton.classList.add('quick-scroll-button');
 
         return this.scrollButton;
     }
 
-    private scrollToBottom = async () => {
-        const markdownView = this.getCurrentViewOfType();
-        if (markdownView) {
-            const file = this.app.workspace.getActiveFile();
-            const content = await (this.app as any).vault.cachedRead(file);
-            const lines = content.split('\n');
-            let numberOfLines = lines.length;
-
-            // In preview mode, don't count empty lines at the end
-            if (markdownView.getMode() === 'preview') {
-                while (numberOfLines > 0 && lines[numberOfLines - 1].trim() === '') {
-                    numberOfLines--;
+    public scrollToBottom = async () => {
+        try {
+            const markdownView = this.getCurrentViewOfType();
+            if (markdownView) {
+                const file = this.app.workspace.getActiveFile();
+                if (!file) {
+                    console.log('No active file found');
+                    return;
                 }
+                
+                const content = await (this.app as any).vault.cachedRead(file);
+                const lines = content.split('\n');
+                let numberOfLines = lines.length;
+
+                // In preview mode, don't count empty lines at the end
+                if (markdownView.getMode() === 'preview') {
+                    while (numberOfLines > 0 && lines[numberOfLines - 1].trim() === '') {
+                        numberOfLines--;
+                    }
+                }
+                markdownView.currentMode.applyScroll(numberOfLines - 1);
+            } else {
+                console.log('No markdown view found');
             }
-            markdownView.currentMode.applyScroll(numberOfLines - 1);
+        } catch (error) {
+            console.error('Error scrolling to bottom:', error);
         }
     };
 
@@ -118,10 +149,10 @@ export default class HelloWorldPlugin extends Plugin {
     }
 }
 
-class SampleSettingTab extends PluginSettingTab {
-    plugin: HelloWorldPlugin;
+class QuickScrollSettingTab extends PluginSettingTab {
+    plugin: QuickScrollPlugin;
 
-    constructor(app: App, plugin: HelloWorldPlugin) {
+    constructor(app: App, plugin: QuickScrollPlugin) {
         super(app, plugin);
         this.plugin = plugin;
     }
@@ -132,14 +163,55 @@ class SampleSettingTab extends PluginSettingTab {
         containerEl.empty();
 
         new Setting(containerEl)
-            .setName('Setting #1')
-            .setDesc("It's a secret")
-            .addText(text => text
-                .setPlaceholder('Enter your secret')
-                .setValue(this.plugin.settings.mySetting)
-                .onChange(async (value) => {
-                    this.plugin.settings.mySetting = value;
+            .setName('Button Position')
+            .setDesc('Choose where to position the scroll button')
+            .addDropdown(dropdown => dropdown
+                .addOption('left', 'Left')
+                .addOption('center', 'Center')
+                .addOption('right', 'Right')
+                .setValue(this.plugin.settings.buttonPosition)
+                .onChange(async (value: 'left' | 'center' | 'right') => {
+                    this.plugin.settings.buttonPosition = value;
                     await this.plugin.saveSettings();
+                    // Recreate button with new position
+                    if (this.plugin.scrollButton) {
+                        this.plugin.scrollButton.remove();
+                    }
+                    this.plugin.scrollButton = this.plugin.createScrollButton();
+                    document.body.appendChild(this.plugin.scrollButton);
+                    // Reattach click event listener
+                    this.plugin.scrollButton.addEventListener("click", this.plugin.scrollToBottom.bind(this.plugin));
+                }));
+
+        new Setting(containerEl)
+            .setName('Button Size')
+            .setDesc('Set the size of the scroll button in pixels')
+            .addSlider(slider => slider
+                .setLimits(20, 50, 5)
+                .setValue(this.plugin.settings.buttonSize)
+                .setDynamicTooltip()
+                .onChange(async (value) => {
+                    this.plugin.settings.buttonSize = value;
+                    await this.plugin.saveSettings();
+                    // Update button size
+                    if (this.plugin.scrollButton) {
+                        this.plugin.scrollButton.style.width = `${value}px`;
+                        this.plugin.scrollButton.style.height = `${value}px`;
+                    }
+                }));
+
+        new Setting(containerEl)
+            .setName('Button Color')
+            .setDesc('Choose the color of the scroll button')
+            .addColorPicker(colorPicker => colorPicker
+                .setValue(this.plugin.settings.buttonColor)
+                .onChange(async (value) => {
+                    this.plugin.settings.buttonColor = value;
+                    await this.plugin.saveSettings();
+                    // Update button color
+                    if (this.plugin.scrollButton) {
+                        this.plugin.scrollButton.style.backgroundColor = value;
+                    }
                 }));
     }
 }

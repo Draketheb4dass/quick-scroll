@@ -1,8 +1,28 @@
-/*
+/* Quick Scroll Plugin Styles */
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.quick-scroll-button {
+    transition: all 0.2s ease-in-out;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
 
-If your plugin does not need CSS, delete this file.
+.quick-scroll-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+}
 
-*/
+.quick-scroll-button:active {
+    transform: scale(0.95);
+}
+
+/* Ensure button is visible on different themes */
+.quick-scroll-button {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Dark theme compatibility */
+.theme-dark .quick-scroll-button {
+    filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.1));
+}

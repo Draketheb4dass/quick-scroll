@@ -1,7 +1,7 @@
 {
 	"id": "quick-scroll",
 	"name": "Quick Scroll",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
 	"description": "Scroll down quickly on documents",
 	"author": "Jephte Colin",

@@ -1,11 +1,29 @@
 /* Quick Scroll Plugin Styles */
 
 .quick-scroll-button {
+    /* Base styles */
+    position: fixed;
+    bottom: 20px;
+    z-index: 1000;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    
+    /* Transitions and user selection */
     transition: all 0.2s ease-in-out;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    
+    /* Default size and color */
+    width: 30px;
+    height: 30px;
+    background-color: var(--button-color, #007BFF);
 }
 
 .quick-scroll-button:hover {
@@ -20,6 +38,58 @@
 /* Ensure button is visible on different themes */
 .quick-scroll-button {
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Position variants */
+.quick-scroll-button.position-left {
+    left: 20px;
+    transform: none;
+}
+
+.quick-scroll-button.position-right {
+    right: 20px;
+    transform: none;
+}
+
+.quick-scroll-button.position-center {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Size variants */
+.quick-scroll-button.size-20 {
+    width: 20px;
+    height: 20px;
+}
+
+.quick-scroll-button.size-25 {
+    width: 25px;
+    height: 25px;
+}
+
+.quick-scroll-button.size-30 {
+    width: 30px;
+    height: 30px;
+}
+
+.quick-scroll-button.size-35 {
+    width: 35px;
+    height: 35px;
+}
+
+.quick-scroll-button.size-40 {
+    width: 40px;
+    height: 40px;
+}
+
+.quick-scroll-button.size-45 {
+    width: 45px;
+    height: 45px;
+}
+
+.quick-scroll-button.size-50 {
+    width: 50px;
+    height: 50px;
 }
 
 /* Dark theme compatibility */

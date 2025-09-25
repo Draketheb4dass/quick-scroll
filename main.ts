@@ -39,8 +39,6 @@ export default class QuickScrollPlugin extends Plugin {
             console.log('click', evt);
         });
 
-        // When registering intervals, this function will automatically clear the interval when the plugin is disabled.
-        this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
     }
 
     onunload() {
@@ -59,43 +57,21 @@ export default class QuickScrollPlugin extends Plugin {
     }
 
     createScrollButton() {
-        // Type assertion to specify that this is an HTMLButtonElement
         this.scrollButton = document.createElement('button') as HTMLButtonElement;
 
         this.scrollButton.innerText = '↓'; // Down arrow symbol
-        this.scrollButton.style.position = 'fixed';
-        this.scrollButton.style.bottom = '20px'; // Space from bottom
         
-        // Apply position based on settings
-        if (this.settings.buttonPosition === 'left') {
-            this.scrollButton.style.left = '20px';
-            this.scrollButton.style.transform = 'none';
-        } else if (this.settings.buttonPosition === 'right') {
-            this.scrollButton.style.right = '20px';
-            this.scrollButton.style.transform = 'none';
-        } else {
-            this.scrollButton.style.left = '50%'; // Center horizontally
-            this.scrollButton.style.transform = 'translateX(-50%)'; // Align center
-        }
-        
-        this.scrollButton.style.zIndex = '1000';
-
-        // Apply styles for position, size, background, and shadow
-        this.scrollButton.style.boxShadow = '0px 4px 6px rgba(0, 0, 0, 0.1)';
-
-        // Circular shape with configurable size
-        this.scrollButton.style.width = `${this.settings.buttonSize}px`;
-        this.scrollButton.style.height = `${this.settings.buttonSize}px`;
-        this.scrollButton.style.borderRadius = '50%';
-        this.scrollButton.style.backgroundColor = this.settings.buttonColor;
-        this.scrollButton.style.color = 'white';
-        this.scrollButton.style.border = 'none';
-        this.scrollButton.style.cursor = 'pointer';
-        this.scrollButton.style.fontSize = '16px';
-        this.scrollButton.style.fontWeight = 'bold';
-        
-        // Add CSS class for styling
+        // Add base CSS class
         this.scrollButton.classList.add('quick-scroll-button');
+        
+        // Add position class
+        this.scrollButton.classList.add(`position-${this.settings.buttonPosition}`);
+        
+        // Add size class
+        this.scrollButton.classList.add(`size-${this.settings.buttonSize}`);
+        
+        // Set background color via CSS custom property for dynamic updates
+        this.scrollButton.style.setProperty('--button-color', this.settings.buttonColor);
 
         return this.scrollButton;
     }
@@ -110,7 +86,7 @@ export default class QuickScrollPlugin extends Plugin {
                     return;
                 }
                 
-                const content = await (this.app as any).vault.cachedRead(file);
+                const content = await this.app.vault.cachedRead(file);
                 const lines = content.split('\n');
                 let numberOfLines = lines.length;
 
@@ -173,14 +149,11 @@ class QuickScrollSettingTab extends PluginSettingTab {
                 .onChange(async (value: 'left' | 'center' | 'right') => {
                     this.plugin.settings.buttonPosition = value;
                     await this.plugin.saveSettings();
-                    // Recreate button with new position
+                    // Update position class
                     if (this.plugin.scrollButton) {
-                        this.plugin.scrollButton.remove();
+                        this.plugin.scrollButton.classList.remove('position-left', 'position-center', 'position-right');
+                        this.plugin.scrollButton.classList.add(`position-${value}`);
                     }
-                    this.plugin.scrollButton = this.plugin.createScrollButton();
-                    document.body.appendChild(this.plugin.scrollButton);
-                    // Reattach click event listener
-                    this.plugin.scrollButton.addEventListener("click", this.plugin.scrollToBottom.bind(this.plugin));
                 }));
 
         new Setting(containerEl)
@@ -193,10 +166,10 @@ class QuickScrollSettingTab extends PluginSettingTab {
                 .onChange(async (value) => {
                     this.plugin.settings.buttonSize = value;
                     await this.plugin.saveSettings();
-                    // Update button size
+                    // Update size class
                     if (this.plugin.scrollButton) {
-                        this.plugin.scrollButton.style.width = `${value}px`;
-                        this.plugin.scrollButton.style.height = `${value}px`;
+                        this.plugin.scrollButton.classList.remove('size-20', 'size-25', 'size-30', 'size-35', 'size-40', 'size-45', 'size-50');
+                        this.plugin.scrollButton.classList.add(`size-${value}`);
                     }
                 }));
 
@@ -208,9 +181,9 @@ class QuickScrollSettingTab extends PluginSettingTab {
                 .onChange(async (value) => {
                     this.plugin.settings.buttonColor = value;
                     await this.plugin.saveSettings();
-                    // Update button color
+                    // Update button color via CSS custom property
                     if (this.plugin.scrollButton) {
-                        this.plugin.scrollButton.style.backgroundColor = value;
+                        this.plugin.scrollButton.style.setProperty('--button-color', value);
                     }
                 }));
     }

@@ -19,7 +19,6 @@ export default class QuickScrollPlugin extends Plugin {
     public scrollButton: HTMLButtonElement;
 
     async onload() {
-        console.log('Loading Quick Scroll plugin');
         await this.loadSettings();
 
         this.scrollButton = this.createScrollButton();
@@ -32,17 +31,9 @@ export default class QuickScrollPlugin extends Plugin {
 
         // This adds a settings tab so the user can configure various aspects of the plugin
         this.addSettingTab(new QuickScrollSettingTab(this.app, this));
-
-        // If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
-        // Using this function will automatically remove the event listener when this plugin is disabled.
-        this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
-            console.log('click', evt);
-        });
-
     }
 
     onunload() {
-        console.log('Unloading Quick Scroll plugin');
         if (this.scrollButton) {
             this.scrollButton.remove();
         }
@@ -107,21 +98,21 @@ export default class QuickScrollPlugin extends Plugin {
 
     public getCurrentViewOfType() {
         // Get the current active view
-        let markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
+        const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
 
-        // To distinguish whether the current view is hidden or not markdownView
-        const currentView = this.app.workspace.getActiveViewOfType(View) as MarkdownView;
+        if (markdownView instanceof MarkdownView) {
+            globalMarkdownView = markdownView;
+            return markdownView;
+        }
 
         // Solve the problem of closing always focus new tab setting
-        if (markdownView !== null) {
-            globalMarkdownView = markdownView;
-        } else {
-            // Fix the plugin shutdown problem when the current view is not exist
-            if (currentView == null || currentView?.file?.extension === "md") {
-                markdownView = globalMarkdownView;
-            }
+        // If no markdown view, use the cached global view
+        const currentView = this.app.workspace.getActiveViewOfType(View);
+        if (currentView == null || currentView?.file?.extension === "md") {
+            return globalMarkdownView;
         }
-        return markdownView;
+
+        return null;
     }
 }
 
@@ -139,7 +130,7 @@ class QuickScrollSettingTab extends PluginSettingTab {
         containerEl.empty();
 
         new Setting(containerEl)
-            .setName('Button Position')
+            .setName('Button position')
             .setDesc('Choose where to position the scroll button')
             .addDropdown(dropdown => dropdown
                 .addOption('left', 'Left')
@@ -157,7 +148,7 @@ class QuickScrollSettingTab extends PluginSettingTab {
                 }));
 
         new Setting(containerEl)
-            .setName('Button Size')
+            .setName('Button size')
             .setDesc('Set the size of the scroll button in pixels')
             .addSlider(slider => slider
                 .setLimits(20, 50, 5)
@@ -174,7 +165,7 @@ class QuickScrollSettingTab extends PluginSettingTab {
                 }));
 
         new Setting(containerEl)
-            .setName('Button Color')
+            .setName('Button color')
             .setDesc('Choose the color of the scroll button')
             .addColorPicker(colorPicker => colorPicker
                 .setValue(this.plugin.settings.buttonColor)

@@ -27,12 +27,36 @@
 }
 
 .quick-scroll-button:hover {
-    transform: scale(1.1);
+    transform: translateX(0) scale(1.1);
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .quick-scroll-button:active {
+    transform: translateX(0) scale(0.95);
+}
+
+.quick-scroll-button.position-left:hover {
+    transform: scale(1.1);
+}
+
+.quick-scroll-button.position-left:active {
     transform: scale(0.95);
+}
+
+.quick-scroll-button.position-right:hover {
+    transform: scale(1.1);
+}
+
+.quick-scroll-button.position-right:active {
+    transform: scale(0.95);
+}
+
+.quick-scroll-button.position-center:hover {
+    transform: translateX(-50%) scale(1.1);
+}
+
+.quick-scroll-button.position-center:active {
+    transform: translateX(-50%) scale(0.95);
 }
 
 /* Ensure button is visible on different themes */

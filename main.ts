@@ -61,8 +61,9 @@ export default class QuickScrollPlugin extends Plugin {
         // Add size class
         this.scrollButton.classList.add(`size-${this.settings.buttonSize}`);
 
-        // Set background color via CSS custom property for dynamic updates
+        // Set background color via CSS custom property and direct style
         this.scrollButton.style.setProperty('--button-color', this.settings.buttonColor);
+        this.scrollButton.style.backgroundColor = this.settings.buttonColor;
 
         return this.scrollButton;
     }
@@ -175,6 +176,7 @@ class QuickScrollSettingTab extends PluginSettingTab {
                     // Update button color via CSS custom property
                     if (this.plugin.scrollButton) {
                         this.plugin.scrollButton.style.setProperty('--button-color', value);
+                        this.plugin.scrollButton.style.backgroundColor = value;
                     }
                 }));
     }

@@ -51,16 +51,16 @@ export default class QuickScrollPlugin extends Plugin {
         this.scrollButton = document.createElement('button') as HTMLButtonElement;
 
         this.scrollButton.innerText = '↓'; // Down arrow symbol
-        
+
         // Add base CSS class
         this.scrollButton.classList.add('quick-scroll-button');
-        
+
         // Add position class
         this.scrollButton.classList.add(`position-${this.settings.buttonPosition}`);
-        
+
         // Add size class
         this.scrollButton.classList.add(`size-${this.settings.buttonSize}`);
-        
+
         // Set background color via CSS custom property for dynamic updates
         this.scrollButton.style.setProperty('--button-color', this.settings.buttonColor);
 
@@ -76,7 +76,7 @@ export default class QuickScrollPlugin extends Plugin {
                     console.log('No active file found');
                     return;
                 }
-                
+
                 const content = await this.app.vault.cachedRead(file);
                 const lines = content.split('\n');
                 let numberOfLines = lines.length;
@@ -108,7 +108,7 @@ export default class QuickScrollPlugin extends Plugin {
         // Solve the problem of closing always focus new tab setting
         // If no markdown view, use the cached global view
         const currentView = this.app.workspace.getActiveViewOfType(View);
-        if (currentView == null || currentView?.file?.extension === "md") {
+        if (currentView == null || (currentView instanceof MarkdownView && currentView.file?.extension === "md")) {
             return globalMarkdownView;
         }
 
